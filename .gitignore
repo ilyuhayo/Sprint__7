@@ -1,0 +1,7 @@
+.idea/
+.venv
+venv
+24.1.2
+To
+base/__pycache__/
+tests/__pycache__/
