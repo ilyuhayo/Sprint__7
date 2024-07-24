@@ -1,7 +1,6 @@
 import requests
 from faker import Faker
-from base.create_courier import register_new_courier_and_return_login_password
-
+from conftest import courier
 
 class TestCreateCourier:
     def test_create_courier(self):
@@ -19,12 +18,11 @@ class TestCreateCourier:
         response_delete = requests.delete(f"https://qa-scooter.praktikum-services.ru/api/v1/courier/{new_courier_id}")
         assert response_delete.status_code == 200
 
-    def test_create_identical_couriers(self):
-        login_pass = register_new_courier_and_return_login_password()
+    def test_create_identical_couriers(self, courier):
         payload = {
-            "login": login_pass[0],
-            "password": login_pass[1],
-            "firstName": login_pass[2]
+            "login": courier['login'],
+            "password": courier['password'],
+            "firstName": courier['firstName']
         }
         response = requests.post("https://qa-scooter.praktikum-services.ru/api/v1/courier", data=payload)
         assert response.status_code == 409
