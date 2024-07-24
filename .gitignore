@@ -7,3 +7,4 @@ base/__pycache__/
 tests/__pycache__/
 __pycache__/conftest.cpython-311-pytest-8.2.2.pyc
 __pycache__/urls.cpython-311.pyc
+__pycache__/responses_text.cpython-311.pyc

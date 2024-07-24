@@ -2,6 +2,7 @@ import requests
 from conftest import courier
 from conftest import fake_data
 from urls import API_URLS
+from responses_text import RESPONSES_TEXT
 
 
 class TestCreateCourier:
@@ -22,7 +23,7 @@ class TestCreateCourier:
         }
         response = requests.post(API_URLS.CREATE_COURIER_ENDPOINT, data=payload)
         assert response.status_code == 409
-        assert response.json()["message"] == "Этот логин уже используется. Попробуйте другой."
+        assert response.json()["message"] == RESPONSES_TEXT.EXISTING_LOGIN_ERROR
 
     def test_create_courier_without_password(self, fake_data):
         payload = {
@@ -31,7 +32,7 @@ class TestCreateCourier:
         }
         response = requests.post(API_URLS.CREATE_COURIER_ENDPOINT, data=payload)
         assert response.status_code == 400
-        assert response.json()["message"] == "Недостаточно данных для создания учетной записи"
+        assert response.json()["message"] == RESPONSES_TEXT.NOT_ENOUGH_AUTH_DATA_ERROR
 
     def test_create_courier_with_existing_login(self):
         payload = {
@@ -40,7 +41,17 @@ class TestCreateCourier:
             "firstName": "andre"
         }
         response = requests.post(API_URLS.CREATE_COURIER_ENDPOINT, data=payload)
-        assert response.json() == {'code': 409, 'message': 'Этот логин уже используется. Попробуйте другой.'}
+        assert response.status_code == 409
+        assert response.json()["message"] == RESPONSES_TEXT.EXISTING_LOGIN_ERROR
+
+
+
+
+
+
+
+
+
 
 
 
