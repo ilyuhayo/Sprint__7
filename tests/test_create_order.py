@@ -1,5 +1,6 @@
 import pytest
 import requests
+from urls import API_URLS
 
 
 class TestCreateOrder:
@@ -16,6 +17,6 @@ class TestCreateOrder:
             "comment": "Saske, come back to Konoha",
             "color": [color]
         }
-        response = requests.post("https://qa-scooter.praktikum-services.ru/api/v1/orders", json=payload)
+        response = requests.post(API_URLS.CREATE_ORDER_ENDPOINT, json=payload)
         track = response.json()
         assert 'track' in track

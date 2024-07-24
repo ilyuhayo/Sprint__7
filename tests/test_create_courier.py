@@ -1,16 +1,17 @@
 import requests
 from conftest import courier
 from conftest import fake_data
+from urls import API_URLS
 
 
 class TestCreateCourier:
     def test_create_courier(self, fake_data):
-        response = requests.post("https://qa-scooter.praktikum-services.ru/api/v1/courier", data=fake_data)
+        response = requests.post(API_URLS.CREATE_COURIER_ENDPOINT, data=fake_data)
         assert response.status_code == 201
         assert response.json() == {'ok': True}
-        id = requests.post("https://qa-scooter.praktikum-services.ru/api/v1/courier/login", data={"login": fake_data['login'], "password": fake_data['password']})
+        id = requests.post(API_URLS.LOGIN_COURIER_ENDPOINT, data={"login": fake_data['login'], "password": fake_data['password']})
         new_courier_id = id.json()['id']
-        response_delete = requests.delete(f"https://qa-scooter.praktikum-services.ru/api/v1/courier/{new_courier_id}")
+        response_delete = requests.delete(f"{API_URLS.DELETE_COURIER_ENDPOINT}{new_courier_id}")
         assert response_delete.status_code == 200
 
     def test_create_identical_couriers(self, courier):
@@ -19,7 +20,7 @@ class TestCreateCourier:
             "password": courier['password'],
             "firstName": courier['firstName']
         }
-        response = requests.post("https://qa-scooter.praktikum-services.ru/api/v1/courier", data=payload)
+        response = requests.post(API_URLS.CREATE_COURIER_ENDPOINT, data=payload)
         assert response.status_code == 409
         assert response.json()["message"] == "Этот логин уже используется. Попробуйте другой."
 
@@ -28,7 +29,7 @@ class TestCreateCourier:
             "login": fake_data["login"],
             "firstName": fake_data["firstName"]
         }
-        response = requests.post("https://qa-scooter.praktikum-services.ru/api/v1/courier", data=payload)
+        response = requests.post(API_URLS.CREATE_COURIER_ENDPOINT, data=payload)
         assert response.status_code == 400
         assert response.json()["message"] == "Недостаточно данных для создания учетной записи"
 
@@ -38,7 +39,7 @@ class TestCreateCourier:
             "password": "123456",
             "firstName": "andre"
         }
-        response = requests.post("https://qa-scooter.praktikum-services.ru/api/v1/courier", data=payload)
+        response = requests.post(API_URLS.CREATE_COURIER_ENDPOINT, data=payload)
         assert response.json() == {'code': 409, 'message': 'Этот логин уже используется. Попробуйте другой.'}
 
 
