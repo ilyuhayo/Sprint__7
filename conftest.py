@@ -29,6 +29,15 @@ def fake_data():
     }
     return payload
 
-
-
-
+@pytest.fixture()
+def courier_without_del():
+    login, password, first_name = register_new_courier_and_return_login_password()
+    login_response = requests.post("https://qa-scooter.praktikum-services.ru/api/v1/courier/login", data={"login": login, "password": password})
+    assert login_response.status_code == 200
+    new_courier_id = login_response.json()['id']
+    yield {
+        'id': new_courier_id,
+        'login': login,
+        'password': password,
+        'firstName': first_name
+    }
