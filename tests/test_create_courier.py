@@ -1,19 +1,14 @@
 import requests
-from faker import Faker
 from conftest import courier
+from conftest import fake_data
+
 
 class TestCreateCourier:
-    def test_create_courier(self):
-        faker = Faker()
-        payload = {
-            "login": faker.user_name(),
-            "password": faker.password(),
-            "firstName": faker.first_name()
-        }
-        response = requests.post("https://qa-scooter.praktikum-services.ru/api/v1/courier", data=payload)
+    def test_create_courier(self, fake_data):
+        response = requests.post("https://qa-scooter.praktikum-services.ru/api/v1/courier", data=fake_data)
         assert response.status_code == 201
         assert response.json() == {'ok': True}
-        id = requests.post("https://qa-scooter.praktikum-services.ru/api/v1/courier/login", data={"login": {payload['login']}, "password": {payload['password']}})
+        id = requests.post("https://qa-scooter.praktikum-services.ru/api/v1/courier/login", data={"login": fake_data['login'], "password": fake_data['password']})
         new_courier_id = id.json()['id']
         response_delete = requests.delete(f"https://qa-scooter.praktikum-services.ru/api/v1/courier/{new_courier_id}")
         assert response_delete.status_code == 200
@@ -28,11 +23,10 @@ class TestCreateCourier:
         assert response.status_code == 409
         assert response.json()["message"] == "Этот логин уже используется. Попробуйте другой."
 
-    def test_create_courier_without_password(self):
-        faker = Faker()
+    def test_create_courier_without_password(self, fake_data):
         payload = {
-            "login": faker.user_name(),
-            "firstName": faker.first_name()
+            "login": fake_data["login"],
+            "firstName": fake_data["firstName"]
         }
         response = requests.post("https://qa-scooter.praktikum-services.ru/api/v1/courier", data=payload)
         assert response.status_code == 400

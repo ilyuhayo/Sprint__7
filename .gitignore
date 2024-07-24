@@ -5,3 +5,4 @@ venv
 To
 base/__pycache__/
 tests/__pycache__/
+__pycache__/conftest.cpython-311-pytest-8.2.2.pyc

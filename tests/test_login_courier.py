@@ -1,56 +1,39 @@
 import requests
-from faker import Faker
-from base.create_courier import register_new_courier_and_return_login_password
+from conftest import courier
 
 
 class TestLoginCourier():
-    def test_login_courier(self):
-        login_pass = register_new_courier_and_return_login_password()
+    def test_login_courier(self, courier):
         payload = {
-            "login": login_pass[0],
-            "password": login_pass[1]
+            "login": courier['login'],
+            "password": courier['password']
         }
         response = requests.post("https://qa-scooter.praktikum-services.ru/api/v1/courier/login", data=payload)
         assert response.status_code == 200
-        id = requests.post("https://qa-scooter.praktikum-services.ru/api/v1/courier/login", data={"login": {payload['login']}, "password": {payload['password']}})
-        new_courier_id = id.json()['id']
-        response_delete = requests.delete(f"https://qa-scooter.praktikum-services.ru/api/v1/courier/{new_courier_id}")
-        assert response_delete.status_code == 200
 
-    def test_invalid_login_courier(self):
-        login_pass = register_new_courier_and_return_login_password()
-        login = login_pass[0]
-        faker = Faker()
+    def test_invalid_login_courier(self, courier):
+        invalid_password = "wrongpassword123"
         payload = {
-            "login": login,
-            "password": faker.password()
+            "login": courier['login'],
+            "password": invalid_password
         }
         response = requests.post("https://qa-scooter.praktikum-services.ru/api/v1/courier/login", data=payload)
         assert response.json() == {"code":404,"message":"Учетная запись не найдена"}
 
-    def test_login_courier_without_login(self):
-        login_pass = register_new_courier_and_return_login_password()
-        password = login_pass[1]
+    def test_login_courier_without_login(self, courier):
         payload = {
-            "password": password
+            "password": courier['password']
         }
         response = requests.post("https://qa-scooter.praktikum-services.ru/api/v1/courier/login", data=payload)
         assert response.json() == {"code":400,"message":"Недостаточно данных для входа"}
 
-    def test_login_courier_return_id(self):
-        login_pass = register_new_courier_and_return_login_password()
-        login = login_pass[0]
-        password = login_pass[1]
+    def test_login_courier_return_id(self, courier):
         payload = {
-            "login": login,
-            "password": password
+            "login": courier['login'],
+            "password": courier['password']
         }
         response = requests.post("https://qa-scooter.praktikum-services.ru/api/v1/courier/login", data=payload)
         current_id = response.json()
         assert 'id' in current_id
-        id = requests.post("https://qa-scooter.praktikum-services.ru/api/v1/courier/login",
-                           data={"login": {payload['login']}, "password": {payload['password']}})
-        new_courier_id = id.json()['id']
-        response_delete = requests.delete(f"https://qa-scooter.praktikum-services.ru/api/v1/courier/{new_courier_id}")
-        assert response_delete.status_code == 200
+        assert response.status_code == 200
 
